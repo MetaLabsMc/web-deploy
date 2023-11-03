@@ -3423,7 +3423,8 @@ var main_exports = {};
 __export(main_exports, {
   mapOutput: () => mapOutput,
   setupSSHPrivateKey: () => setupSSHPrivateKey,
-  syncFiles: () => syncFiles
+  syncFilesWithPassword: () => syncFilesWithPassword,
+  syncFilesWithPrivateKey: () => syncFilesWithPrivateKey
 });
 module.exports = __toCommonJS(main_exports);
 var import_core = __toESM(require_core());
@@ -3445,8 +3446,12 @@ async function run() {
     console.log(`or add a badge \u{1F3F7}\uFE0F to your projects readme --> https://github.com/SamKirkland/web-deploy#badge`);
     console.log(`----------------------------------------------------------------`);
     await verifyRsyncInstalled();
-    const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
-    await syncFiles(privateKeyPath, userArguments);
+    if (userArguments.type_auth === "password") {
+      await syncFilesWithPassword(userArguments);
+    } else {
+      const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
+      await syncFilesWithPrivateKey(privateKeyPath, userArguments);
+    }
     console.log("\u2705 Deploy Complete");
   } catch (error) {
     console.error(errorDeploying);
@@ -3473,7 +3478,26 @@ function withDefault(value, defaultValue) {
   }
   return value;
 }
-async function syncFiles(privateKeyPath, args) {
+async function syncFilesWithPassword(args) {
+  try {
+    const rsyncArguments = [];
+    rsyncArguments.push(...(0, import_string_argv.default)(`-e 'ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`));
+    rsyncArguments.push(...(0, import_string_argv.default)(args.rsync_options));
+    if (args.source_path !== void 0) {
+      rsyncArguments.push(args.source_path);
+    }
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    rsyncArguments.push(destination);
+    return await (0, import_exec.exec)(
+      `sshpass -p '${args.ssh_password}' rsync`,
+      rsyncArguments,
+      mapOutput
+    );
+  } catch (error) {
+    (0, import_core.setFailed)(error);
+  }
+}
+async function syncFilesWithPrivateKey(privateKeyPath, args) {
   try {
     const rsyncArguments = [];
     rsyncArguments.push(...(0, import_string_argv.default)(`-e 'ssh -p ${args.ssh_port} -i ${privateKeyPath} -o StrictHostKeyChecking=no'`));
@@ -3481,26 +3505,13 @@ async function syncFiles(privateKeyPath, args) {
     if (args.source_path !== void 0) {
       rsyncArguments.push(args.source_path);
     }
-    if (args.type_auth === "password") {
-      const destination = `${args.source_path} ${args.remote_user}@${args.target_server}:${args.destination_path}`;
-      rsyncArguments.push(destination);
-      const sshpassCommand = `sshpass -p '${args.ssh_password}'`;
-      const rsyncCommand = `rsync ${rsyncArguments.join(" ")}`;
-      const fullCommand = `${sshpassCommand} ${rsyncCommand}`;
-      return await (0, import_exec.exec)(
-        fullCommand,
-        [],
-        mapOutput
-      );
-    } else {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-      rsyncArguments.push(destination);
-      return await (0, import_exec.exec)(
-        "rsync",
-        rsyncArguments,
-        mapOutput
-      );
-    }
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    rsyncArguments.push(destination);
+    return await (0, import_exec.exec)(
+      "rsync",
+      rsyncArguments,
+      mapOutput
+    );
   } catch (error) {
     (0, import_core.setFailed)(error);
   }
@@ -3555,5 +3566,6 @@ var mapOutput = {
 0 && (module.exports = {
   mapOutput,
   setupSSHPrivateKey,
-  syncFiles
+  syncFilesWithPassword,
+  syncFilesWithPrivateKey
 });

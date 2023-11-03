@@ -8,9 +8,16 @@ inputs:
   remote-user:
     description: "SSH account username"
     required: true
+  type-auth:
+    description: "Type of authentication to use"
+    required: true
+    default: "password"
+  ssh-password:
+    description: "SSH account password"
+    required: false
   private-ssh-key:
     description: "Private SSH key"
-    required: true
+    required: false
   source-path:
     description: "Path to upload to on the server, must end with trailing slash /"
     required: true

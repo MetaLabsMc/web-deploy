@@ -23,8 +23,15 @@ async function run() {
     console.log(`----------------------------------------------------------------`);
 
     await verifyRsyncInstalled();
-    const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
-    await syncFiles(privateKeyPath, userArguments);
+
+    if (userArguments.type_auth === "password") {
+      await syncFilesWithPassword(userArguments);
+    }
+    else {
+      const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
+      await syncFilesWithPrivateKey(privateKeyPath, userArguments);
+    }
+
 
     console.log("✅ Deploy Complete");
   }
@@ -59,9 +66,37 @@ function withDefault(value: string, defaultValue: string) {
 }
 
 /**
- * Sync changed files
+ * Sync changed files with password
  */
-export async function syncFiles(privateKeyPath: string, args: IActionArguments) {
+export async function syncFilesWithPassword(args: IActionArguments) {
+  try {
+    const rsyncArguments: string[] = [];
+
+    rsyncArguments.push(...stringArgv(`-e 'ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`));
+
+    rsyncArguments.push(...stringArgv(args.rsync_options));
+
+    if (args.source_path !== undefined) {
+      rsyncArguments.push(args.source_path);
+    }
+
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    rsyncArguments.push(destination);
+
+    return await exec(
+        `sshpass -p '${args.ssh_password}' rsync`,
+        rsyncArguments,
+        mapOutput
+    );
+  } catch (error) {
+    setFailed(error as any);
+  }
+}
+
+/**
+ * Sync changed files with private key
+ */
+export async function syncFilesWithPrivateKey(privateKeyPath: string, args: IActionArguments) {
   try {
     const rsyncArguments: string[] = [];
 
@@ -73,31 +108,14 @@ export async function syncFiles(privateKeyPath: string, args: IActionArguments) 
       rsyncArguments.push(args.source_path);
     }
 
-    if (args.type_auth === "password") {
-      const destination = `${args.source_path} ${args.remote_user}@${args.target_server}:${args.destination_path}`;
-      rsyncArguments.push(destination);
+    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+    rsyncArguments.push(destination);
 
-      const sshpassCommand = `sshpass -p '${args.ssh_password}'`;
-      const rsyncCommand = `rsync ${rsyncArguments.join(" ")}`;
-
-      const fullCommand = `${sshpassCommand} ${rsyncCommand}`;
-
-      return await exec(
-          fullCommand,
-          [],
-          mapOutput
-      );
-    }
-    else {
-      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-      rsyncArguments.push(destination);
-
-      return await exec(
-          "rsync",
-          rsyncArguments,
-          mapOutput
-      );
-    }
+    return await exec(
+        "rsync",
+        rsyncArguments,
+        mapOutput
+    );
   }
   catch (error) {
     setFailed(error as any);

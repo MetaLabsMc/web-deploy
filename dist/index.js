@@ -3447,8 +3447,10 @@ async function run() {
     console.log(`----------------------------------------------------------------`);
     await verifyRsyncInstalled();
     if (userArguments.type_auth === "password") {
+      console.log("\u2705 Deployment using a password");
       await syncFilesWithPassword(userArguments);
     } else {
+      console.log("\u2705 Deployment using a private key");
       const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
       await syncFilesWithPrivateKey(privateKeyPath, userArguments);
     }

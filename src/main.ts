@@ -85,11 +85,10 @@ export async function syncFilesWithPassword(args: IActionArguments) {
     const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
 
-    return await exec(
-        `sshpass -p '${args.ssh_password}' rsync`,
-        rsyncArguments,
-        mapOutput
-    );
+    const sshpassCommand = `sshpass -p '${args.ssh_password}' rsync ${rsyncArguments.join(' ')}`;
+
+    await exec(sshpassCommand, [], mapOutput);
+
   } catch (error) {
     setFailed(error as any);
   }

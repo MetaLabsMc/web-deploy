@@ -3490,11 +3490,8 @@ async function syncFilesWithPassword(args) {
     }
     const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
-    return await (0, import_exec.exec)(
-      `sshpass -p '${args.ssh_password}' rsync`,
-      rsyncArguments,
-      mapOutput
-    );
+    const sshpassCommand = `sshpass -p '${args.ssh_password}' rsync ${rsyncArguments.join(" ")}`;
+    await (0, import_exec.exec)(sshpassCommand, [], mapOutput);
   } catch (error) {
     (0, import_core.setFailed)(error);
   }

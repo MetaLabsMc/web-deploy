@@ -3440,21 +3440,18 @@ async function run() {
     const userArguments = getUserArguments();
     console.log(`----------------------------------------------------------------`);
     console.log(`\u{1F680} Thanks for using web deploy. Let's deploy some stuff!`);
-    console.log(`----------------------------------------------------------------`);
-    console.log(`If you found this project helpful, please support it`);
-    console.log(`by giving it a \u2B50 on Github --> https://github.com/SamKirkland/web-deploy`);
-    console.log(`or add a badge \u{1F3F7}\uFE0F to your projects readme --> https://github.com/SamKirkland/web-deploy#badge`);
+    console.log(`\u{1F4D1} Patched by MetaLabsMc. Added password authorization`);
     console.log(`----------------------------------------------------------------`);
     await verifyRsyncInstalled();
     if (userArguments.type_auth === "password") {
-      console.log("\u2705 Deployment using a password");
+      console.log("\u2705 SSH-\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E \u043F\u0430\u0440\u043E\u043B\u044F");
       await syncFilesWithPassword(userArguments);
     } else {
-      console.log("\u2705 Deployment using a private key");
+      console.log("\u2705 SSH-\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F \u0441 \u043F\u043E\u043C\u043E\u0449\u044C\u044E \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0433\u043E \u043A\u043B\u044E\u0447\u0430");
       const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
       await syncFilesWithPrivateKey(privateKeyPath, userArguments);
     }
-    console.log("\u2705 Deploy Complete");
+    console.log("\u2705 \u0421\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0430\u0446\u0438\u044F \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430");
   } catch (error) {
     console.error(errorDeploying);
     (0, import_core.setFailed)(error);
@@ -3544,20 +3541,20 @@ async function setupSSHPrivateKey(key) {
   await import_fs.promises.mkdir(sshFolderPath, { recursive: true });
   const knownHostsPath = `${sshFolderPath}/known_hosts`;
   if (!(0, import_fs.existsSync)(knownHostsPath)) {
-    console.log(`[SSH] Creating ${knownHostsPath} file in `, GITHUB_WORKSPACE);
+    console.log(`[SSH] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 "${knownHostsPath}" \u0432 `, GITHUB_WORKSPACE);
     await import_fs.promises.writeFile(knownHostsPath, "", {
       encoding: "utf8",
       mode: 384
     });
-    console.log("\u2705 [SSH] file created.");
+    console.log("\u2705 [SSH] \u0424\u0430\u0439\u043B \u0441\u043E\u0437\u0434\u0430\u043D");
   } else {
-    console.log(`[SSH] ${knownHostsPath} file exist`);
+    console.log(`[SSH] "${knownHostsPath}" \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442`);
   }
   await import_fs.promises.writeFile(privateKeyPath, key, {
     encoding: "utf8",
     mode: 384
   });
-  console.log("\u2705 Ssh key added to `.ssh` dir ", privateKeyPath);
+  console.log("\u2705 SSH \u043A\u043B\u044E\u0447 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D \u0432 ", privateKeyPath);
   return privateKeyPath;
 }
 var mapOutput = {

@@ -16,26 +16,23 @@ async function run() {
 
     console.log(`----------------------------------------------------------------`);
     console.log(`🚀 Thanks for using web deploy. Let's deploy some stuff!`);
-    console.log(`----------------------------------------------------------------`);
-    console.log(`If you found this project helpful, please support it`);
-    console.log(`by giving it a ⭐ on Github --> https://github.com/SamKirkland/web-deploy`);
-    console.log(`or add a badge 🏷️ to your projects readme --> https://github.com/SamKirkland/web-deploy#badge`);
+    console.log(`📑 Patched by MetaLabsMc. Added password authorization`);
     console.log(`----------------------------------------------------------------`);
 
     await verifyRsyncInstalled();
 
     if (userArguments.type_auth === "password") {
-      console.log("✅ Deployment using a password");
+      console.log("✅ SSH-Авторизация с помощью пароля");
       await syncFilesWithPassword(userArguments);
     }
     else {
-      console.log("✅ Deployment using a private key");
+      console.log("✅ SSH-Авторизация с помощью приватного ключа");
       const privateKeyPath = await setupSSHPrivateKey(userArguments.private_ssh_key);
       await syncFilesWithPrivateKey(privateKeyPath, userArguments);
     }
 
 
-    console.log("✅ Deploy Complete");
+    console.log("✅ Синхронизация завершена");
   }
   catch (error) {
     console.error(errorDeploying);
@@ -160,21 +157,21 @@ export async function setupSSHPrivateKey(key: string) {
   const knownHostsPath = `${sshFolderPath}/known_hosts`;
 
   if (!existsSync(knownHostsPath)) {
-    console.log(`[SSH] Creating ${knownHostsPath} file in `, GITHUB_WORKSPACE);
+    console.log(`[SSH] Создание "${knownHostsPath}" в `, GITHUB_WORKSPACE);
     await promises.writeFile(knownHostsPath, "", {
       encoding: 'utf8',
       mode: 0o600
     });
-    console.log('✅ [SSH] file created.');
+    console.log('✅ [SSH] Файл создан');
   } else {
-    console.log(`[SSH] ${knownHostsPath} file exist`);
+    console.log(`[SSH] "${knownHostsPath}" уже существует`);
   }
 
   await promises.writeFile(privateKeyPath, key, {
     encoding: 'utf8',
     mode: 0o600
   });
-  console.log('✅ Ssh key added to `.ssh` dir ', privateKeyPath);
+  console.log('✅ SSH ключ добавлен в ', privateKeyPath);
 
   return privateKeyPath;
 };

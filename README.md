@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
     
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.2
+      uses: MetaLabsMc/web-deploy@v1.0.3
       with:
         target-server: example.com
         remote-user: username
@@ -64,7 +64,7 @@ I strongly recommend you store your `private-ssh-key` as a secret.
 | `target-server`    | Yes       | `example.com`                            |                                                                                                                                                                          | Destination server to deploy to                                                                                                                                    |
 | `destination-path` | Yes       | `~/folderOnServerThatAlreadyExists/`     |                                                                                                                                                                          | Path on the server to deploy to. Must already exist.                                                                                                               |
 | `remote-user`      | Yes       | `username`                               |                                                                                                                                                                          | SSH user to login as                                                                                                                                               |
-| `type-auth`        | No        | `private_key`                            | `password`                                                                                                                                                               | SSH authorization type                                                                                                                                             |
+| `type-auth`        | No        | `password`                               | `private_key`                                                                                                                                                            | SSH authorization type                                                                                                                                             |
 | `ssh_password`     | No        | `your_ssh_password`                      |                                                                                                                                                                          | SSH Password. Must be specified as a secret.                                                                                                                       |
 | `private-ssh-key`  | No        | `-----BEGIN RSA PRIVATE KEY----- ......` |                                                                                                                                                                          | SSH Private key. Must be specified as a secret.                                                                                                                    |
 | `source-path`      | No        | `./myFolderToPublish/`                   | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                                                                  |
@@ -119,7 +119,7 @@ jobs:
       run: npm run build
     
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.2
+      uses: MetaLabsMc/web-deploy@v1.0.3
       with:
         target-server: example.com
         remote-user: username
@@ -142,7 +142,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.2
+      uses: MetaLabsMc/web-deploy@v1.0.3
       with:
         target-server: example.com
         remote-user: username
@@ -166,7 +166,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.2
+      uses: MetaLabsMc/web-deploy@v1.0.3
       with:
         target-server: example.com
         remote-user: username

@@ -11,7 +11,7 @@ inputs:
   type-auth:
     description: "Type of authentication to use"
     required: false
-    default: "password"
+    default: "private_key"
   ssh-password:
     description: "SSH account password"
     required: false

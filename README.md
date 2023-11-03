@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
     
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.1
+      uses: MetaLabsMc/web-deploy@v1.0.2
       with:
         target-server: example.com
         remote-user: username
@@ -119,7 +119,7 @@ jobs:
       run: npm run build
     
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.1
+      uses: MetaLabsMc/web-deploy@v1.0.2
       with:
         target-server: example.com
         remote-user: username
@@ -142,7 +142,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.1
+      uses: MetaLabsMc/web-deploy@v1.0.2
       with:
         target-server: example.com
         remote-user: username
@@ -166,7 +166,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 📂 Sync Files
-      uses: MetaLabsMc/web-deploy@v1.0.1
+      uses: MetaLabsMc/web-deploy@v1.0.2
       with:
         target-server: example.com
         remote-user: username

@@ -41,7 +41,9 @@ function getUserArguments(): IActionArguments {
     target_server: getInput("target-server", { required: true }),
     destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
     remote_user: getInput("remote-user", { required: true }),
-    private_ssh_key: getInput("private-ssh-key", { required: true }),
+    type_auth: getInput("type-auth", { required: true }),
+    private_ssh_key: getInput("private-ssh-key", { required: false }),
+    ssh_password: getInput("ssh-password", { required: false }),
     source_path: withDefault(getInput("source-path", { required: false }), "./"),
     ssh_port: withDefault(getInput("ssh-port"), "22"),
     rsync_options: withDefault(getInput("rsync-options"), default_rsync_options)
@@ -71,14 +73,31 @@ export async function syncFiles(privateKeyPath: string, args: IActionArguments) 
       rsyncArguments.push(args.source_path);
     }
 
-    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-    rsyncArguments.push(destination);
+    if (args.type_auth === "password") {
+      const destination = `${args.source_path} ${args.remote_user}@${args.target_server}:${args.destination_path}`;
+      rsyncArguments.push(destination);
 
-    return await exec(
-      "rsync",
-      rsyncArguments,
-      mapOutput
-    );
+      const sshpassCommand = `sshpass -p '${args.ssh_password}'`;
+      const rsyncCommand = `rsync ${rsyncArguments.join(" ")}`;
+
+      const fullCommand = `${sshpassCommand} ${rsyncCommand}`;
+
+      return await exec(
+          fullCommand,
+          [],
+          mapOutput
+      );
+    }
+    else {
+      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+      rsyncArguments.push(destination);
+
+      return await exec(
+          "rsync",
+          rsyncArguments,
+          mapOutput
+      );
+    }
   }
   catch (error) {
     setFailed(error as any);

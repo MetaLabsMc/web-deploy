@@ -3459,7 +3459,9 @@ function getUserArguments() {
     target_server: (0, import_core.getInput)("target-server", { required: true }),
     destination_path: withDefault((0, import_core.getInput)("destination-path", { required: false }), "./"),
     remote_user: (0, import_core.getInput)("remote-user", { required: true }),
-    private_ssh_key: (0, import_core.getInput)("private-ssh-key", { required: true }),
+    type_auth: (0, import_core.getInput)("type-auth", { required: true }),
+    private_ssh_key: (0, import_core.getInput)("private-ssh-key", { required: false }),
+    ssh_password: (0, import_core.getInput)("ssh-password", { required: false }),
     source_path: withDefault((0, import_core.getInput)("source-path", { required: false }), "./"),
     ssh_port: withDefault((0, import_core.getInput)("ssh-port"), "22"),
     rsync_options: withDefault((0, import_core.getInput)("rsync-options"), default_rsync_options)
@@ -3479,13 +3481,26 @@ async function syncFiles(privateKeyPath, args) {
     if (args.source_path !== void 0) {
       rsyncArguments.push(args.source_path);
     }
-    const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
-    rsyncArguments.push(destination);
-    return await (0, import_exec.exec)(
-      "rsync",
-      rsyncArguments,
-      mapOutput
-    );
+    if (args.type_auth === "password") {
+      const destination = `${args.source_path} ${args.remote_user}@${args.target_server}:${args.destination_path}`;
+      rsyncArguments.push(destination);
+      const sshpassCommand = `sshpass -p '${args.ssh_password}'`;
+      const rsyncCommand = `rsync ${rsyncArguments.join(" ")}`;
+      const fullCommand = `${sshpassCommand} ${rsyncCommand}`;
+      return await (0, import_exec.exec)(
+        fullCommand,
+        [],
+        mapOutput
+      );
+    } else {
+      const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
+      rsyncArguments.push(destination);
+      return await (0, import_exec.exec)(
+        "rsync",
+        rsyncArguments,
+        mapOutput
+      );
+    }
   } catch (error) {
     (0, import_core.setFailed)(error);
   }

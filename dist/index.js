@@ -3463,7 +3463,7 @@ function getUserArguments() {
     target_server: (0, import_core.getInput)("target-server", { required: true }),
     destination_path: withDefault((0, import_core.getInput)("destination-path", { required: false }), "./"),
     remote_user: (0, import_core.getInput)("remote-user", { required: true }),
-    type_auth: (0, import_core.getInput)("type-auth", { required: true }),
+    type_auth: withDefault((0, import_core.getInput)("type-auth", { required: false }), "private_key"),
     private_ssh_key: (0, import_core.getInput)("private-ssh-key", { required: false }),
     ssh_password: (0, import_core.getInput)("ssh-password", { required: false }),
     source_path: withDefault((0, import_core.getInput)("source-path", { required: false }), "./"),

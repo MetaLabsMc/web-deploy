@@ -47,7 +47,7 @@ function getUserArguments(): IActionArguments {
     target_server: getInput("target-server", { required: true }),
     destination_path: withDefault(getInput("destination-path", { required: false }), "./"),
     remote_user: getInput("remote-user", { required: true }),
-    type_auth: getInput("type-auth", { required: true }),
+    type_auth: withDefault(getInput("type-auth", { required: false }), "private_key"),
     private_ssh_key: getInput("private-ssh-key", { required: false }),
     ssh_password: getInput("ssh-password", { required: false }),
     source_path: withDefault(getInput("source-path", { required: false }), "./"),

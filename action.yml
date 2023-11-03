@@ -10,7 +10,7 @@ inputs:
     required: true
   type-auth:
     description: "Type of authentication to use"
-    required: true
+    required: false
     default: "password"
   ssh-password:
     description: "SSH account password"

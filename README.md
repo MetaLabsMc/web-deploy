@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
     
     - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1
+      uses: MetaLabsMc/web-deploy@v1.0.1
       with:
         target-server: example.com
         remote-user: username
@@ -64,7 +64,7 @@ I strongly recommend you store your `private-ssh-key` as a secret.
 | `target-server`    | Yes       | `example.com`                            |                                                                                                                                                                          | Destination server to deploy to                                                                                                                                    |
 | `destination-path` | Yes       | `~/folderOnServerThatAlreadyExists/`     |                                                                                                                                                                          | Path on the server to deploy to. Must already exist.                                                                                                               |
 | `remote-user`      | Yes       | `username`                               |                                                                                                                                                                          | SSH user to login as                                                                                                                                               |
-| `type-auth`        | Yes       | `password`                               | `private_key`                                                                                                                                                            | SSH authorization type                                                                                                                                             |
+| `type-auth`        | No        | `password`                               | `private_key`                                                                                                                                                            | SSH authorization type                                                                                                                                             |
 | `ssh_password`     | No        | `-----BEGIN RSA PRIVATE KEY----- ......` |                                                                                                                                                                          | SSH Password. Must be specified as a secret.                                                                                                                       |
 | `private-ssh-key`  | No        | `your_ssh_password`                      |                                                                                                                                                                          | SSH Private key. Must be specified as a secret.                                                                                                                    |
 | `source-path`      | No        | `./myFolderToPublish/`                   | `./`                                                                                                                                                                     | Path to upload to on the server, must end with trailing slash `/`                                                                                                  |
@@ -119,7 +119,7 @@ jobs:
       run: npm run build
     
     - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1
+      uses: MetaLabsMc/web-deploy@v1.0.1
       with:
         target-server: example.com
         remote-user: username
@@ -129,6 +129,7 @@ jobs:
 
 #### Log only dry run: Use this mode for testing
 Ouputs a list of files that will be created/modified to sync your source without making any actual changes
+
 ```yml
 on: push
 name: Publish Website Dry Run
@@ -141,7 +142,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 📂 Sync Files
-      uses: SamKirkland/web-deploy@v1
+      uses: MetaLabsMc/web-deploy@v1.0.1
       with:
         target-server: example.com
         remote-user: username
@@ -150,6 +151,29 @@ jobs:
         destination-path: ~/destinationFolder/
         rsync-options: --dry-run --archive --verbose --compress --delete-after --human-readable --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore
 ```
+
+#### Authorization via password
+
+```yml
+on: push
+name: Publish Website Dry Run
+jobs:
+  web-deploy:
+    name: 🚀 Deploy Website Every Commit
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v3
+
+    - name: 📂 Sync Files
+      uses: MetaLabsMc/web-deploy@v1.0.1
+      with:
+        target-server: example.com
+        remote-user: username
+        type-auth: "password"
+        ssh-password: ${{ secrets.SSH_PASSWORD }}
+        destination-path: ~/destinationFolder/
+ ```
 
 _Want another example? Let me know by creating a [github issue](https://github.com/SamKirkland/web-deploy/issues/new)_
 

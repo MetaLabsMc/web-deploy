@@ -3483,15 +3483,24 @@ function withDefault(value, defaultValue) {
 async function syncFilesWithPassword(args) {
   try {
     const rsyncArguments = [];
-    rsyncArguments.push(...(0, import_string_argv.default)(`-e 'ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`));
+    rsyncArguments.push(
+      ...(0, import_string_argv.default)(
+        `-e 'sshpass -p "${args.ssh_password}" ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`
+      )
+    );
+    rsyncArguments.push("--update");
+    rsyncArguments.push("--recursive");
     rsyncArguments.push(...(0, import_string_argv.default)(args.rsync_options));
     if (args.source_path !== void 0) {
       rsyncArguments.push(args.source_path);
     }
     const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
-    const sshpassCommand = `sshpass -p '${args.ssh_password}' rsync ${rsyncArguments.join(" ")}`;
-    await (0, import_exec.exec)(sshpassCommand, [], mapOutput);
+    return await (0, import_exec.exec)(
+      "rsync",
+      rsyncArguments,
+      mapOutput
+    );
   } catch (error) {
     (0, import_core.setFailed)(error);
   }

@@ -74,7 +74,14 @@ export async function syncFilesWithPassword(args: IActionArguments) {
   try {
     const rsyncArguments: string[] = [];
 
-    rsyncArguments.push(...stringArgv(`-e 'ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`));
+    rsyncArguments.push(
+        ...stringArgv(
+            `-e 'sshpass -p "${args.ssh_password}" ssh -p ${args.ssh_port} -o StrictHostKeyChecking=no'`
+        )
+    );
+
+    rsyncArguments.push('--update');
+    rsyncArguments.push('--recursive');
 
     rsyncArguments.push(...stringArgv(args.rsync_options));
 
@@ -85,10 +92,11 @@ export async function syncFilesWithPassword(args: IActionArguments) {
     const destination = `${args.remote_user}@${args.target_server}:${args.destination_path}`;
     rsyncArguments.push(destination);
 
-    const sshpassCommand = `sshpass -p '${args.ssh_password}' rsync ${rsyncArguments.join(' ')}`;
-
-    await exec(sshpassCommand, [], mapOutput);
-
+    return await exec(
+        "rsync",
+        rsyncArguments,
+        mapOutput
+    );
   } catch (error) {
     setFailed(error as any);
   }
